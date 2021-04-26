@@ -24,20 +24,23 @@ namespace Store.Controllers.StoreController
         }
 
         [HttpGet("GetProduct")]
-        public async Task<IActionResult> GetProductAsync(){
+        public async Task<IActionResult> GetProduct(){
            var result= await _product.GetProduct();
             return Ok(result);
         }
 
+       
+
         [HttpGet("GetProductById/{id}")]
-        public async Task<IActionResult> GetProductByIdAsync(int id){
+        public async Task<IActionResult> GetProductById(int id){
            
             var result= await _product.GetProductById(id);
             return Ok(result);
         }
 
+
         [HttpPost("InsertProduct")]
-        public async Task<IActionResult> InsertProductAsync(ProductDTO_ToCreate input){
+        public async Task<IActionResult> InsertProduct(ProductDTO_ToCreate input){
 
             var result = await _product.InsertProduct(input);
             if (result.IsSuccess)
@@ -51,13 +54,22 @@ namespace Store.Controllers.StoreController
         }
 
         [HttpPut("EditProduct/{id}")]
-        public async Task<IActionResult> EditProductAsync(ProductDTO_ToUpdate input ,int id){
+        public async Task<IActionResult> EditProduct(ProductDTO_ToUpdate input ,int id){
            
             var result= await _product.EditProduct(input,id);
             return Ok(result);
         }
+
+
+        [HttpGet("SearchProductPaginate")]
+        public async Task<IActionResult> SearchProductPaginate([FromQuery] ProductDTO_Filter filter)
+        {
+
+            var result = await _product.SearchProductPaginate(filter);
+            return Ok(result);
         }
 
-     
+        }
+
         
     }

@@ -7,9 +7,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Store.Data;
+using Store.DTOs;
 using Store.DTOs.Store;
 using Store.Models;
 using Store.Models.Store;
+using System.Linq.Dynamic.Core;
+using Store.Helpers;
 
 namespace Store.Services.Products
 {
@@ -79,6 +82,7 @@ namespace Store.Services.Products
             
         }
 
+       
         public async Task<ServiceResponse<ProductDTO_ToReturn>> InsertProduct(ProductDTO_ToCreate input)
         {
             try
@@ -103,6 +107,49 @@ namespace Store.Services.Products
                return ResponseResult.Failure<ProductDTO_ToReturn>(ex.Message);
             }
              
+        }
+
+        public async Task<ServiceResponse<List<ProductDTO_ToReturn>>> SearchProductPaginate(ProductDTO_Filter filter)
+        {
+             var queryable = _dbContext.Products.AsQueryable();
+            //filter
+             if(!String.IsNullOrWhiteSpace(filter.Name))
+             {
+                 queryable = queryable.Where(x => (x.Name).Contains(filter.Name));
+             }
+
+              if(filter.ProductGroupId != 0)
+             {
+                 queryable = queryable.Where(x => x.ProductGroupId == filter.ProductGroupId);
+             }
+
+            //Order By
+              if (!string.IsNullOrWhiteSpace(filter.OrderingField))
+            {
+                try
+                {
+                    queryable = queryable.OrderBy($"{filter.OrderingField} {(filter.AscendingOrder ? "ascending" : "descending")}");
+                }
+                catch
+                {
+                    return ResponseResultWithPagination.Failure<List<ProductDTO_ToReturn>>($"Could not order by field: {filter.OrderingField}");
+                }
+            }
+
+
+                //Add Paginate
+                 var paginationResult = await _httpContext.HttpContext.InsertPaginationParametersInResponse(queryable, filter.RecordsPerPage, filter.Page);
+
+                //Excute query
+                var product = await queryable.Paginate(filter).ToListAsync();
+
+                var result = _mapper.Map<List<ProductDTO_ToReturn>>(product);
+
+                return ResponseResultWithPagination.Success(result ,paginationResult);
+
+
+
+            
         }
     }
 }

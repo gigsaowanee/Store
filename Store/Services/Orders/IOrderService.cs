@@ -8,7 +8,7 @@ namespace Store.Services.Orders
     public interface IOrderService
     {
          Task<ServiceResponse<OrderDTO_ToReturn>> GetOrderById(int id);
-
          Task<ServiceResponse<OrderDTO_ToReturn>> InsertOrder(OrderOrderDetailDTO_ToCreate input);
+         Task<ServiceResponse<List<OrderDTO_ToReturn>>> SearchOrderPaginate(OrderDTO_Filter filter);
     }
 }

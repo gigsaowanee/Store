@@ -11,6 +11,8 @@ using Store.Models;
 using Store.Services;
 using Store.DTOs.Store;
 using Store.Models.Store;
+using System.Linq.Dynamic.Core;
+using Store.Helpers;
 
 namespace Store.Services.Orders
 {
@@ -101,6 +103,45 @@ namespace Store.Services.Orders
                return ResponseResult.Failure<OrderDTO_ToReturn>(ex.Message);
             }
              
+        }
+
+        public async Task<ServiceResponse<List<OrderDTO_ToReturn>>> SearchOrderPaginate(OrderDTO_Filter filter)
+        {
+             var queryable = _dbContext.Orders.AsQueryable();
+            //filter
+             if(!String.IsNullOrWhiteSpace(filter.PaymentType))
+             {
+                 queryable = queryable.Where(x => (x.PaymentType).Contains(filter.PaymentType));
+             }
+
+              if(filter.MinPrice != 0)
+             {
+                 queryable = queryable.Where(x => x.TotalPrice >=  filter.MinPrice);
+             }
+
+            //Order By
+              if (!string.IsNullOrWhiteSpace(filter.OrderingField))
+            {
+                try
+                {
+                    queryable = queryable.OrderBy($"{filter.OrderingField} {(filter.AscendingOrder ? "ascending" : "descending")}");
+                }
+                catch
+                {
+                    return ResponseResultWithPagination.Failure<List<OrderDTO_ToReturn>>($"Could not order by field: {filter.OrderingField}");
+                }
+            }
+
+
+                //Add Paginate
+                 var paginationResult = await _httpContext.HttpContext.InsertPaginationParametersInResponse(queryable, filter.RecordsPerPage, filter.Page);
+
+                //Excute query
+                var order = await queryable.Paginate(filter).ToListAsync();
+
+                var result = _mapper.Map<List<OrderDTO_ToReturn>>(order);
+
+                return ResponseResultWithPagination.Success(result ,paginationResult);
         }
     }
 }

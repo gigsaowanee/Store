@@ -37,7 +37,7 @@ namespace Store.Controllers.StoreController
         }
 
         [HttpPost("InsertProductGroup")]
-        public async Task<IActionResult> InsertProductGroupAsync(ProductGroupDTO_ToCreate input){
+        public async Task<IActionResult> InsertProductGroup(ProductGroupDTO_ToCreate input){
             
 
             var result = await _productGroup.InsertProductGroup(input);
@@ -53,7 +53,7 @@ namespace Store.Controllers.StoreController
         }
 
         [HttpPut("EditProductGroup/{id}")]
-        public async Task<IActionResult> EditProductGroupAsync(ProductGroupDTO_ToUpdate input ,int id){
+        public async Task<IActionResult> EditProductGroup(ProductGroupDTO_ToUpdate input ,int id){
             
                 var result = await _productGroup.EditProductGroup(input,id);
                 return Ok(result);
@@ -61,9 +61,17 @@ namespace Store.Controllers.StoreController
         
 
         [HttpGet("GetProductByProductGroupId")]
-        public async Task<IActionResult> GetProductByProductGroupIdAsync(int id){
+        public async Task<IActionResult> GetProductByProductGroupId(int id){
             
             var result = await _productGroup.GetProductByProductGroupId(id);
+            return Ok(result);
+        }
+
+        
+           [HttpGet("SearchProductGroupPaginate")]
+        public async Task<IActionResult> SearchProductGroupPaginate([FromQuery] ProductGroupDTO_Filter filter){
+           
+            var result= await _productGroup.SearchProductGroupPaginate(filter);
             return Ok(result);
         }
     }

@@ -12,6 +12,7 @@ namespace Store.Services.ProductGroups
          Task<ServiceResponse<ProductGroupDTO_ToReturn>> InsertProductGroup(ProductGroupDTO_ToCreate input);
          Task <ServiceResponse<List<ProductGroupDTO_ToReturn_Product>>> GetProductByProductGroupId(int id);
          Task<ServiceResponse<ProductGroupDTO_ToReturn>> EditProductGroup(ProductGroupDTO_ToUpdate input, int id);
+         Task<ServiceResponse<List<ProductGroupDTO_ToReturn>>> SearchProductGroupPaginate(ProductGroupDTO_Filter filter);
 
     }
 }

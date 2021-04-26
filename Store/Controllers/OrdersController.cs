@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Store.Data;
@@ -15,6 +16,7 @@ namespace Store.Controllers.StoreController
 
      [ApiController] 
     [Route("api/[controller]")]
+    [Authorize]
     public class OrdersController: ControllerBase
     {
         private readonly IOrderService _order;
@@ -24,7 +26,7 @@ namespace Store.Controllers.StoreController
         }
         
         [HttpPost("InsertOrder")]
-        public async Task<IActionResult> InsertOrderAsync(OrderOrderDetailDTO_ToCreate input){
+        public async Task<IActionResult> InsertOrder(OrderOrderDetailDTO_ToCreate input){
             var result = await _order.InsertOrder(input);
 
             if(result.IsSuccess)
@@ -39,12 +41,22 @@ namespace Store.Controllers.StoreController
         }
 
         [HttpGet("GetorderById/{id}")]
+        [Authorize(Roles= "Manager")]
         public async Task<IActionResult> GetOrderById(int id){
            
            var result = await _order.GetOrderById(id);
 
             return Ok(result);
             }
+
+        [HttpGet("SearchOrderPaginate")]
+        public async Task<IActionResult> SearchOrderPaginate([FromQuery] OrderDTO_Filter filter)
+        {
+
+            var result = await _order.SearchOrderPaginate(filter);
+            return Ok(result);
+        }
+
 
 
         }

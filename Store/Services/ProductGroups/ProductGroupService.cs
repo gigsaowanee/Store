@@ -10,6 +10,8 @@ using Store.Data;
 using Store.DTOs.Store;
 using Store.Models;
 using Store.Models.Store;
+using System.Linq.Dynamic.Core;
+using Store.Helpers;
 
 namespace Store.Services.ProductGroups
 {
@@ -95,7 +97,45 @@ namespace Store.Services.ProductGroups
                 return ResponseResult.Failure<ProductGroupDTO_ToReturn>(ex.Message);
             }
        }
-           
-        
+
+        public async Task<ServiceResponse<List<ProductGroupDTO_ToReturn>>> SearchProductGroupPaginate(ProductGroupDTO_Filter filter)
+        {
+             var queryable = _dbContext.ProductGroups.Include(x => x.Product).AsQueryable();
+            //filter
+             if(!String.IsNullOrWhiteSpace(filter.Name))
+             {
+                 queryable = queryable.Where(x => (x.Name).Contains(filter.Name));
+             }
+
+              if(!String.IsNullOrWhiteSpace(filter.GroupCode))
+             {
+                 
+                 queryable = queryable.Where(x => (x.GroupCode).Contains(filter.GroupCode));
+             }
+
+            //Order By
+              if (!string.IsNullOrWhiteSpace(filter.OrderingField))
+            {
+                try
+                {
+                    queryable = queryable.OrderBy($"{filter.OrderingField} {(filter.AscendingOrder ? "ascending" : "descending")}");
+                }
+                catch
+                {
+                    return ResponseResultWithPagination.Failure<List<ProductGroupDTO_ToReturn>>($"Could not order by field: {filter.OrderingField}");
+                }
+            }
+
+
+                //Add Paginate
+                 var paginationResult = await _httpContext.HttpContext.InsertPaginationParametersInResponse(queryable, filter.RecordsPerPage, filter.Page);
+
+                //Excute query
+                var productGroup = await queryable.Paginate(filter).ToListAsync();
+
+                var result = _mapper.Map<List<ProductGroupDTO_ToReturn>>(productGroup);
+
+                return ResponseResultWithPagination.Success(result, paginationResult);
+        }
     }
 }
