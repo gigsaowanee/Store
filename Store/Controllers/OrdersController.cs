@@ -44,7 +44,8 @@ namespace Store.Controllers.StoreController
         [Authorize(Roles= "Manager")]
         public async Task<IActionResult> GetOrderById(int id)
         {
-           Console.WriteLine(150);
+            Console.WriteLine("dev1");
+            Console.WriteLine("dev1");
            var result = await _order.GetOrderById(id);
 
             return Ok(result);
