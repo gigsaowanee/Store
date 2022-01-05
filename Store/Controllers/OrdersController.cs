@@ -42,12 +42,13 @@ namespace Store.Controllers.StoreController
 
         [HttpGet("GetorderById/{id}")]
         [Authorize(Roles= "Manager")]
-        public async Task<IActionResult> GetOrderById(int id){
-           
+        public async Task<IActionResult> GetOrderById(int id)
+        {
+           Console.WriteLine(150);
            var result = await _order.GetOrderById(id);
 
             return Ok(result);
-            }
+       }
 
         [HttpGet("SearchOrderPaginate")]
         public async Task<IActionResult> SearchOrderPaginate([FromQuery] OrderDTO_Filter filter)
