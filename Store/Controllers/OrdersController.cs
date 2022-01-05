@@ -54,6 +54,8 @@ namespace Store.Controllers.StoreController
         public async Task<IActionResult> SearchOrderPaginate([FromQuery] OrderDTO_Filter filter)
         {
             Console.WriteLine("dev1");
+            Console.WriteLine("dev2");
+
             var result = await _order.SearchOrderPaginate(filter);
             return Ok(result);
         }
