@@ -55,6 +55,7 @@ namespace Store.Controllers.StoreController
         {
             Console.WriteLine("dev1");
             Console.WriteLine("dev2");
+
             var result = await _order.SearchOrderPaginate(filter);
             return Ok(result);
         }
