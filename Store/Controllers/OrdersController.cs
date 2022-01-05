@@ -53,7 +53,8 @@ namespace Store.Controllers.StoreController
         [HttpGet("SearchOrderPaginate")]
         public async Task<IActionResult> SearchOrderPaginate([FromQuery] OrderDTO_Filter filter)
         {
-            Console.WriteLine("12345");
+            Console.WriteLine("dev1");
+            Console.WriteLine("dev2");
             var result = await _order.SearchOrderPaginate(filter);
             return Ok(result);
         }
